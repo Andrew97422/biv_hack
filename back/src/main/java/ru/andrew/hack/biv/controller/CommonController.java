@@ -21,7 +21,7 @@ public class CommonController {
             @RequestParam(value = "path") String path
     ) {
         log.info("Got request for path: {}", path);
-        Object result = null;
+        Object result;
         try {
             result = commonService.get(path);
             if (result != "") {
@@ -71,5 +71,11 @@ public class CommonController {
     ) {
         log.info("Got request for path: {}", path);
         return ResponseEntity.ok(commonService.delete(path));
+    }
+
+    @DeleteMapping("all")
+    public ResponseEntity<String> deleteAll() {
+        log.info("Got request for all paths");
+        return ResponseEntity.ok(commonService.deleteAll());
     }
 }

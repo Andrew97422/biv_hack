@@ -1,12 +1,10 @@
 package ru.andrew.hack.biv.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import org.json.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.List;
 
 @Data
 @Document(collection = "types")
@@ -15,7 +13,8 @@ public class Type {
     private String id;
     private String name;
     private String description;
-    private JSONObject parameters;
+    @JsonProperty("parameters")
+    private String parameters;
     @Indexed
     private String path;
 }
