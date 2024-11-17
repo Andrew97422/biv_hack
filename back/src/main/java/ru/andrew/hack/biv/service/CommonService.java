@@ -70,7 +70,7 @@ public class CommonService {
         }
     }
 
-    public Object post(String path, String body) throws JSONException {
+    public Object post(String path, String body) throws JSONException, IllegalArgumentException {
         String[] ids = path.split("\\.");
         if (!productRepository.existsById(ids[0])) {
             return "";
@@ -78,76 +78,67 @@ public class CommonService {
         JSONObject jsonObj = new JSONObject(body);
         log.info(jsonObj.toString());
         switch (ids.length) {
-            case 1, 2 -> {
-                var object = objectRepository.findByPath(path);
-                if (object == null) {
-                    log.info("null");
-                    object = new ObjectDoc();
-                } else {
-                    log.info("not null");
-                }
+            case 1 -> {
+                var object = new ObjectDoc();
                 object.setName(jsonObj.getString("name"));
                 object.setDescription(jsonObj.getString("description"));
                 object.setParameters(jsonObj.getString("parameters"));
-                if (ids.length == 1) {
-                    objectRepository.save(object);
-                    object.setPath(path + "." + object.getId());
-                    log.info(object.toString());
-                    objectRepository.save(object);
-                } else {
-                    String id = object.getId();
-                    if (object.getId() == null) {
-                        return "";
-                    }
-                    object.setPath(path + "." + id);
-                    objectRepository.save(object);
-                    log.info(objectRepository.findById(id).toString());
+                objectRepository.save(object);
+                object.setPath(path + "." + object.getId());
+                objectRepository.save(object);
+                return object.getId();
+            }
+            case 2 -> {
+                /*
+                if (objectRepository.existsByPath(path)) {
+                    throw new IllegalArgumentException("Object already exists");
+                }*/
+                if (!objectRepository.existsById(ids[1])) {
+                    throw new IllegalArgumentException();
                 }
-
+                var object = new ObjectDoc();
+                object.setName(jsonObj.getString("name"));
+                object.setDescription(jsonObj.getString("description"));
+                object.setParameters(jsonObj.getString("parameters"));
+                objectRepository.save(object);
+                String id = object.getId();
+                object.setPath(path + "." + id);
+                objectRepository.save(object);
                 return object.getId();
             }
             case 3 -> {
-                var type = typeRepository.findByPath(path);
-                if (type == null) {
-                    type = new Type();
+                /*
+                if (typeRepository.existsByPath(path)) {
+                    throw new IllegalArgumentException("Type already exists");
+                }*/
+                if (!typeRepository.existsById(ids[2])) {
+                    throw new IllegalArgumentException();
                 }
+                var type = new Type();
                 type.setName(jsonObj.getString("name"));
                 type.setDescription(jsonObj.getString("description"));
-                if (type.getPath() == null) {
-                    var newType = new Type();
-                    newType.setName(jsonObj.getString("name"));
-                    newType.setDescription(jsonObj.getString("description"));
-                    newType.setParameters(jsonObj.getString("parameters"));
-                    typeRepository.save(newType);
-                    newType.setPath(path + "." + newType.getId());
-                    typeRepository.save(newType);
-                    return newType.getId();
-                } else {
-                    type.setPath(path + "." + type.getId());
-                }
                 type.setParameters(jsonObj.getString("parameters"));
+                typeRepository.save(type);
+                String id = type.getId();
+                type.setPath(path + "." + id);
                 typeRepository.save(type);
                 return type.getId();
             }
             case 4 -> {
-                var risk = riskRepository.findByPath(path);
-                if (risk == null) {
-                    risk = new ru.andrew.hack.biv.model.Risk();
+                /*
+                if (riskRepository.existsByPath(path)) {
+                    throw new IllegalArgumentException("Risk already exists");
+                }*/
+                if (!riskRepository.existsById(ids[3])) {
+                    throw new IllegalArgumentException();
                 }
+                var risk = new Risk();
                 risk.setName(jsonObj.getString("name"));
                 risk.setDescription(jsonObj.getString("description"));
-                if (risk.getPath() == null) {
-                    var newRisk = new ru.andrew.hack.biv.model.Risk();
-                    newRisk.setName(jsonObj.getString("name"));
-                    newRisk.setDescription(jsonObj.getString("description"));
-                    newRisk.setParameters(jsonObj.getString("parameters"));
-                    riskRepository.save(newRisk);
-                    newRisk.setPath(path + "." + newRisk.getId());
-                    riskRepository.save(newRisk);
-                    return newRisk.getId();
-                }
-                risk.setPath(path);
                 risk.setParameters(jsonObj.getString("parameters"));
+                riskRepository.save(risk);
+                String id = risk.getId();
+                risk.setPath(path + "." + id);
                 riskRepository.save(risk);
                 return risk.getId();
             }
@@ -234,5 +225,52 @@ public class CommonService {
         typeRepository.deleteAll();
         riskRepository.deleteAll();
         return "ok";
+    }
+
+    public String put(String path, String body) throws JSONException {
+        String[] ids = path.split("\\.");
+        if (!productRepository.existsById(ids[0])) {
+            return "";
+        }
+        JSONObject jsonObj = new JSONObject(body);
+        log.info(jsonObj.toString());
+        switch (ids.length) {
+            case 2 -> {
+                if (!objectRepository.existsByPath(path)) {
+                    throw new IllegalArgumentException();
+                }
+                var objectDoc = objectRepository.findByPath(path);
+                objectDoc.setName(jsonObj.getString("name"));
+                objectDoc.setDescription(jsonObj.getString("description"));
+                objectDoc.setParameters(jsonObj.getString("parameters"));
+                objectRepository.save(objectDoc);
+                return "ok";
+            }
+            case 3 -> {
+                if (!typeRepository.existsByPath(path)) {
+                    throw new IllegalArgumentException();
+                }
+                var type = typeRepository.findByPath(path);
+                type.setName(jsonObj.getString("name"));
+                type.setDescription(jsonObj.getString("description"));
+                type.setParameters(jsonObj.getString("parameters"));
+                typeRepository.save(type);
+                return "ok";
+            }
+            case 4 -> {
+                if (!riskRepository.existsByPath(path)) {
+                    throw new IllegalArgumentException();
+                }
+                var risk = riskRepository.findByPath(path);
+                risk.setName(jsonObj.getString("name"));
+                risk.setDescription(jsonObj.getString("description"));
+                risk.setParameters(jsonObj.getString("parameters"));
+                riskRepository.save(risk);
+                return "ok";
+            }
+            default -> {
+                return "";
+            }
+        }
     }
 }

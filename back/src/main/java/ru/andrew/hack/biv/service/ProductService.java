@@ -46,11 +46,13 @@ public class ProductService {
     }
 
     public String updateProduct(String id, ProductDto product) {
-        var productToUpdate = productRepository.findById(id);
-        productToUpdate.ifPresent(i -> {
-            i.setName(product.getName());
-            i.setDescription(product.getDescription());
-        });
+        var productToUpdate = productRepository.findById(id).orElse(null);
+        if (productToUpdate == null ) {
+            return "";
+        }
+        productToUpdate.setName(product.getName());
+        productToUpdate.setDescription(product.getDescription());
+        productRepository.save(productToUpdate);
         return id;
     }
 

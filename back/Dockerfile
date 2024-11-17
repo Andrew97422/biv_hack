@@ -1,5 +1,5 @@
 # Этап сборки
-FROM docker.io/library/maven:3.9.8 as build
+FROM docker.io/library/maven:3.9.8 AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src

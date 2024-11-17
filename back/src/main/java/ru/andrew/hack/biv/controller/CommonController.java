@@ -3,9 +3,12 @@ package ru.andrew.hack.biv.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.andrew.hack.biv.service.CommonService;
+
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 
 @RestController
 @RequestMapping("api/v1/path")
@@ -60,6 +63,21 @@ public class CommonController {
             } else {
                 return ResponseEntity.badRequest().build();
             }
+        } catch (JSONException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatusCode.valueOf(HTTP_BAD_REQUEST));
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity<String> put(
+            @RequestParam(value = "path") String path,
+            @RequestBody String body
+    ) {
+        log.info("Got request for path: {}", path);
+        try {
+            return ResponseEntity.ok(commonService.put(path, body));
         } catch (JSONException e) {
             return ResponseEntity.badRequest().build();
         }

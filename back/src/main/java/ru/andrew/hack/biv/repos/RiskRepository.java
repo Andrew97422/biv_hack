@@ -6,4 +6,6 @@ import ru.andrew.hack.biv.model.Risk;
 public interface RiskRepository extends MongoRepository<Risk, String> {
     Risk findByPath(String path);
     void deleteByPath(String path);
+
+    boolean existsByPath(String path);
 }
