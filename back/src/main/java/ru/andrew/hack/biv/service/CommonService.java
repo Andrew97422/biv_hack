@@ -44,6 +44,8 @@ public class CommonService {
             }
             case 3 -> {
                 var type = typeRepository.findByPath(path);
+
+                log.info(type.toString());
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("id", type.getId());
                 jsonObject.put("name", type.getName());
@@ -104,6 +106,8 @@ public class CommonService {
             }
             case 3 -> {
                 if (!typeRepository.existsById(ids[2])) {
+                    log.info(ids[2]);
+                    log.info(String.valueOf(typeRepository.findAll()));
                     throw new IllegalArgumentException();
                 }
                 var risk = new Risk();
