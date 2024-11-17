@@ -89,29 +89,7 @@ public class CommonService {
                 return object.getId();
             }
             case 2 -> {
-                /*
-                if (objectRepository.existsByPath(path)) {
-                    throw new IllegalArgumentException("Object already exists");
-                }*/
                 if (!objectRepository.existsById(ids[1])) {
-                    throw new IllegalArgumentException();
-                }
-                var object = new ObjectDoc();
-                object.setName(jsonObj.getString("name"));
-                object.setDescription(jsonObj.getString("description"));
-                object.setParameters(jsonObj.getString("parameters"));
-                objectRepository.save(object);
-                String id = object.getId();
-                object.setPath(path + "." + id);
-                objectRepository.save(object);
-                return object.getId();
-            }
-            case 3 -> {
-                /*
-                if (typeRepository.existsByPath(path)) {
-                    throw new IllegalArgumentException("Type already exists");
-                }*/
-                if (!typeRepository.existsById(ids[2])) {
                     throw new IllegalArgumentException();
                 }
                 var type = new Type();
@@ -124,12 +102,8 @@ public class CommonService {
                 typeRepository.save(type);
                 return type.getId();
             }
-            case 4 -> {
-                /*
-                if (riskRepository.existsByPath(path)) {
-                    throw new IllegalArgumentException("Risk already exists");
-                }*/
-                if (!riskRepository.existsById(ids[3])) {
+            case 3 -> {
+                if (!typeRepository.existsById(ids[2])) {
                     throw new IllegalArgumentException();
                 }
                 var risk = new Risk();
